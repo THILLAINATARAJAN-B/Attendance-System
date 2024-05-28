@@ -1,0 +1,88 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+.navbar {
+    background-color: #333;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    padding: 14px 20px;
+}
+
+.navbar form {
+    display: inline;
+}
+
+.navbar button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.navbar button:hover {
+    background-color: #45a049;
+}
+
+.navbar button:focus {
+    outline: none;
+}
+.content {
+    padding: 20px;
+}
+.form-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    margin: 20px auto; /* Center the form */
+}
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.form-container p {
+    margin: 5px 0;
+}
+#qr-video {
+    width: 100%;
+}
+.scan-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+.scan-button-container button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #4caf50;
+    color: #fff;
+    cursor: pointer;
+}
+.scan-button-container button:hover {
+    background-color: #45a049;
+}
+.flash-message {
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    font-size: 16px;
+}
+.flash-message.success {
+    background-color: #4caf50;
+    color: white;
+}
+.flash-message.danger {
+    background-color: #f44336;
+    color: white;
+}

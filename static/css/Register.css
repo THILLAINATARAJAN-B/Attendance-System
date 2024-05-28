@@ -1,0 +1,105 @@
+body {
+    padding: 100px;
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+    flex-direction: column;
+}
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+    margin: 10%;
+}
+h2 {
+    text-align: center;
+    color: #333;
+}
+.form-group {
+    margin-bottom: 15px;
+}
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #218838;
+}
+.error-message {
+    color: red;
+    text-align: center;
+}
+
+body {
+margin: 0;
+padding: 0;
+font-family: Arial, sans-serif;
+}
+.navbar {
+background-color: #000000;
+overflow: hidden;
+display: flex;
+justify-content: right;
+padding: 14px 20px;
+width: 100%;
+padding-right: 10%;
+
+
+}
+.navbar h2{
+    text-align: left;
+}
+
+.navbar form {
+display: inline;
+}
+
+.navbar button {
+background-color: #4CAF50;
+color: white;
+border: none;
+padding: 10px 20px;
+text-align: center;
+text-decoration: none;
+display: inline-block;
+font-size: 16px;
+margin: 4px 2px;
+cursor: pointer;
+transition: background-color 0.3s ease;
+}
+
+.navbar button:hover {
+background-color: #45a049;
+}
+
+.navbar button:focus {
+outline: none;
+}
