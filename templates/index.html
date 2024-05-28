@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login</h2>
+        <form method="POST" action="{{ url_for('index') }}">
+            <input type="text" id="email" name="email" placeholder="Email ID" required>
+            <input type="password" id="password" name="password" placeholder="Password" required>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <select id="type" name="type" required>
+                    <option value="staff">staff</option>
+                    <option value="student">student</option>
+                </select>
+            </div>
+            <input type="submit" value="Login">
+        </form>
+    </div>
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% if category == 'danger' %}
+                        <script>
+                            showAlert('{{ message }}');
+                        </script>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <div class="register-container">
+        <p>If you don't have an account</p>
+        <form method="GET" action="{{ url_for('register') }}">
+            <button type="submit">Register Here</button>
+        </form>
+    </div>
+</body>
+</html>

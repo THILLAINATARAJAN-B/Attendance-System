@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance</title>
+    <link rel="stylesheet" href="/static/css/attendance_report.css">
+</head>
+<body>
+
+    <div class="navbar">
+        {% if session['type'] == 'staff' %}
+        <form id="home" action="{{ url_for('staff') }}" method="GET" style="display: inline;">
+            <button type="submit">Home</button>
+        </form>
+        {% elif session['type'] == 'student' %}
+        <form id="home" action="{{ url_for('student') }}" method="GET" style="display: inline;">
+            <button type="submit">Home</button>
+        </form>
+        {% endif %}
+        <form id="attendance-report" action="{{ url_for('attendance_report') }}" method="POST" style="display: inline;">
+            <button type="submit">Attendance Report</button>
+        </form>
+        <form id="logout-form" action="{{ url_for('logout') }}" method="POST" style="display: inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+    <div class="filter_tab">
+        <label for="collegeId">College ID:</label>
+        <select id="collegeId" onchange="updateSubjectCodes(); filterRecords()">
+            <option value="All">All</option>
+            {% for s in college %}
+                            <option value="{{ s[0] }}">{{ s[0] }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="department">Department:</label>
+        <select id="department" onchange="updateSubjectCodes(); filterRecords()">
+            <option value="All">All</option>
+            {% for dept in departments %}
+                            <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="semester">Semester:</label>
+        <select id="semester" onchange="updateSubjectCodes(); filterRecords()">
+            <option value="All">All</option>
+            {% for sem in semesters %}
+                            <option value="{{ sem[0] }}">{{ sem[0] }}</option>
+            {% endfor %}
+        </select>
+
+        <label for="subjectCode">Subject Code:</label>
+        <select id="subjectCode" onchange="filterRecords()">
+            <option value="All">All</option>
+            {% for code in subject_codes %}
+                            <option value="{{ code[0] }}">{{ code[0] }}</option>
+            {% endfor %}
+        </select>
+        <label for="date">Date:</label>
+        <input type="date" id="date" onchange="filterRecords()">
+
+        <button onclick="clearFilters()">Clear Filters</button>
+    </div>
+    <h2>Attendance Report</h2>
+    <table id="attendanceTable">
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>Date</th>
+                <th>College ID</th>
+                <th>Department</th>
+                <th>Semester</th>
+                <th>Subject Code</th>
+                <th>Staff ID</th>
+                <th>Student ID</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Record</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in attendance_records %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ record[0] }}</td>
+                <td>{{ record[1] }}</td>
+                <td>{{ record[2] }}</td>
+                <td>{{ record[3] }}</td>
+                <td>{{ record[4] }}</td>
+                <td>{{ record[5] }}</td>
+                <td>{{ record[6] }}</td>
+                <td>{{ record[7] }}</td>
+                <td>{{ record[8] }}</td>
+                <td>{{ record[9] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    
+<script>
+    function filterRecords() {
+        var collegeId = document.getElementById("collegeId").value;
+        var department = document.getElementById("department").value;
+        var semester = document.getElementById("semester").value;
+        var subjectCode = document.getElementById("subjectCode").value;
+        var date = document.getElementById("date").value; 
+
+        var table = document.getElementById("attendanceTable");
+        var rows = table.getElementsByTagName("tr");
+
+        for (var i = 1; i < rows.length; i++) { // Start from 1 to skip the header row
+            var cells = rows[i].getElementsByTagName("td");
+            var hideRow = false;
+
+            if (collegeId !== "All" && cells[2].innerText !== collegeId) {
+                hideRow = true;
+            }
+            if (department !== "All" && cells[3].innerText !== department) {
+                hideRow = true;
+            }
+            if (semester !== "All" && cells[4].innerText !== semester) {
+                hideRow = true;
+            }
+            if (subjectCode !== "All" && cells[5].innerText !== subjectCode) {
+                hideRow = true;
+            }
+
+            if (date && cells[1]) {
+                var cellDate = new Date(cells[1].innerText).toISOString().split('T')[0]; 
+                if (date !== cellDate) {
+                    hideRow = true;
+                }
+            }
+
+            if (hideRow) {
+                rows[i].style.display = "none";
+            } else {
+                rows[i].style.display = "";
+            }
+        }
+    }
+
+    function updateSubjectCodes() {
+        const collegeId = document.getElementById('collegeId').value;
+        const sem = document.getElementById('semester').value;
+        const department = document.getElementById('department').value;
+
+        fetch('/filter_subject_codes', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ collegeId: collegeId, sem: sem, department: department })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const subjectCodeSelect = document.getElementById('subjectCode');
+                subjectCodeSelect.innerHTML = '<option value="All">All</option>';
+                data.subject_codes.forEach(code => {
+                    const option = document.createElement('option');
+                    option.value = code;
+                    option.textContent = code;
+                    subjectCodeSelect.appendChild(option);
+                });
+            } else {
+                console.error('Error fetching subject codes:', data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function clearFilters() {
+        document.getElementById('collegeId').value = "All";
+        document.getElementById('department').value = "All";
+        document.getElementById('semester').value = "All";
+        document.getElementById('subjectCode').value = "All";
+        document.getElementById('date').value = "";
+
+        filterRecords();
+    }
+</script>
+</body>
+</html>

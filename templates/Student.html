@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Home</title>
+    <link rel="stylesheet" href="/static/css/student.css">
+    <script>
+        function showAlert(message) {
+            alert(message);
+        }
+    </script>
+</head>
+<body>
+
+    <div class="navbar">
+        {% if session['type'] == 'staff' %}
+        <form id="home" action="{{ url_for('staff') }}" method="GET" style="display: inline;">
+            <button type="submit">Home</button>
+        </form>
+        {% elif session['type'] == 'student' %}
+        <form id="home" action="{{ url_for('student') }}" method="GET" style="display: inline;">
+            <button type="submit">Home</button>
+        </form>
+        {% endif %}
+        <form id="attendance-report" action="{{ url_for('attendance_report') }}" method="POST" style="display: inline;">
+            <button type="submit">Attendance Report</button>
+        </form>
+        <form id="logout-form" action="{{ url_for('logout') }}" method="POST" style="display: inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+    
+
+<div class="content">
+    <div class="form-container" id="details">
+        <h2>User Details</h2>
+        <p><strong>User ID:</strong> {{ user_details[0] }}</p>
+        <p><strong>Username:</strong> {{ user_details[1] }}</p>
+        <p><strong>Type:</strong> {{ user_details[2] }}</p>
+        <p><strong>Department:</strong> {{ user_details[3] }}</p>
+        <p><strong>Language:</strong> {{ user_details[5] }}</p>
+        <p><strong>Email:</strong> {{ user_details[6] }}</p>
+        <p><strong>Mobile:</strong> {{ user_details[7] }}</p>
+        <p><strong>Address:</strong> {{ user_details[8] }}</p>
+    </div>
+
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% if category == 'danger' %}
+                        <script>
+                            showAlert('{{ message }}');
+                        </script>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="qr_code">
+        <div class="qr_scan">
+            <!-- HTML Button to Open Modal -->
+            <h2>Scan QR Code</h2>
+            <button id="openModalButton">Scan QR Code</button>
+        </div>
+        
+        <div class="qr_upload">
+            <!-- QR Code Upload Form -->
+            <h2>Upload QR Code</h2>
+            <form action="{{ url_for('upload_qr_code') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="qr_code_image" id="qr_code_image" accept="image/*">
+                <button type="submit">Upload QR Code</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Hidden Modal Content -->
+    <div id="qrCodeModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div>
+                <h1>Scan QR Code</h1>
+            </div>
+            <div>
+                <video id="video" width="100%" height="auto" autoplay></video>
+            </div>
+            <div>
+                <button id="captureButton">Take Picture</button>
+            </div>
+            <canvas id="canvas" style="display: none;"></canvas>
+        </div>
+    </div>
+    <div>
+        {% if session['qr_verified'] %}
+        {% if not session['attendance_recorded'] %}
+            <!-- Display Leave button if attendance is already recorded -->
+            <form id="joinForm" action="{{ url_for('join_class') }}" method="post" style="display: block;">
+                <button type="submit" id="joinButton" onclick="joinClass()">Join</button>
+            </form>
+        {% endif %}
+        
+        {% if session['attendance_recorded'] %}
+            <!-- Display Leave button if attendance is already recorded -->
+            <form id="leaveForm" action="{{ url_for('leave_class') }}" method="post">
+                <button type="submit" id="leaveButton" onclick="leaveClass()">Leave</button>
+            </form>
+        {% endif %}
+        {% endif %}
+    </div>
+
+</div>
+
+<script>
+    // Get elements
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const captureButton = document.getElementById('captureButton');
+    const modal = document.getElementById('qrCodeModal');
+    const openModalButton = document.getElementById('openModalButton');
+
+    // Function to start the camera
+    function startCamera() {
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(function(stream) {
+                video.srcObject = stream;
+                video.play();
+            })
+            .catch(function(err) {
+                console.log('Error accessing camera:', err);
+            });
+    }
+
+    // Function to stop the camera
+    function stopCamera() {
+        const stream = video.srcObject;
+        if (stream) {
+            const tracks = stream.getTracks();
+            tracks.forEach(function(track) {
+                track.stop();
+            });
+            video.srcObject = null;
+        }
+    }
+
+    // Function to send image data to backend
+    function sendImageDataToBackend(imageData) {
+        fetch('/process_qr_code', {
+            method: 'POST',
+            body: JSON.stringify({ imageData: imageData }),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response:', data);
+            // Handle response from the backend here
+            if (data.success) {
+                // QR code successfully decoded
+                alert('QR code successfully decoded: ' + data.qr_code_data);
+                window.location.href = data.redirect_url;
+            } else {
+                // Failed to decode QR code
+                alert('Failed to decode QR code. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error sending image data to backend:', error);
+            // Handle errors here
+        });
+    }
+
+    // Add event listener to open modal button
+    openModalButton.addEventListener('click', function() {
+        modal.style.display = 'block';
+        startCamera();
+    });
+
+    // Add event listener to close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+            stopCamera();
+        }
+    });
+
+    // Add event listener to capture button
+    captureButton.addEventListener('click', () => {
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = canvas.toDataURL('image/png');
+        sendImageDataToBackend(imageData);
+    });
+
+    // Function to handle Join button click
+    function joinClass() {
+        // Show the join form
+        document.getElementById('joinForm').style.display = 'none';
+    }
+</script>
+</body>
+</html>

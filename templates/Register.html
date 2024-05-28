@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="/static/css/Register.css">
+</head>
+<body>
+
+    <div class="navbar">
+        <h2>Attendance Portal</h2>
+        <form id="logout-form" action="{{ url_for('logout') }}" method="POST" style="display: inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>Register</h2>
+        {% if error_message %}
+            <p class="error-message">{{ error_message }}</p>
+        {% endif %}
+        <form action="{{ url_for('register') }}" method="POST">
+            <div class="form-group">
+                <label for="person_name">Full Name</label>
+                <input type="text" id="person_name" name="person_name" required>
+            </div>
+            <div class="form-group">
+                <label for="type">Type</label>
+                <select id="type" name="type" required>
+                    <option value="staff">staff</option>
+                    <option value="student">student</option>
+                </select>
+            </div>
+
+            
+            <div class="form-group">
+                <label for="college">College Id:</label>
+                    <select id="college" name="college" required onchange="updateSubjectCodes()">
+                        <option value="" disabled selected>Select College Id</option>
+                        {% for s in college %}
+                            <option value="{{ s[0] }}">{{ s[0] }}</option>
+                        {% endfor %}
+                    </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="Department">Department:</label>
+                    <select id="department" name="department" required onchange="updateSubjectCodes()">
+                        <option value="" disabled selected>Select Department</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                        {% endfor %}
+                    </select>
+            </div>
+
+            <div class="form-group">
+                <label for="d_o_b">Date of Birth</label>
+                <input type="date" id="d_o_b" name="d_o_b" required>
+            </div>
+            <div class="form-group">
+                <label for="language">Language</label>
+                <input type="text" id="language" name="language" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="mobile">Mobile Number</label>
+                <input type="text" id="mobile" name="mobile" required>
+            </div>
+            <div class="form-group">
+                <label for="whats_app">WhatsApp Number</label>
+                <input type="text" id="whats_app" name="whats_app" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" name="address" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+</body>
+</html>

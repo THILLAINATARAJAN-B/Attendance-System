@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff</title>
+    <!-- Add Instascan library -->
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <link rel="stylesheet" href="/static/css/Staff.css">
+    <script>
+        function showAlert(message) {
+            alert(message);
+        }
+    </script>
+    <script>
+        function updateSubjectCodes() {
+            const sem = document.getElementById('sem').value;
+            const department = document.getElementById('Department').value;
+
+            fetch('/filter_subject_codes', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ sem: sem, department: department })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const subjectCodeSelect = document.getElementById('subject_code');
+                    subjectCodeSelect.innerHTML = '<option value="" disabled selected>Select Subject Code</option>';
+                    data.subject_codes.forEach(code => {
+                        const option = document.createElement('option');
+                        option.value = code[0];
+                        option.textContent = code[0];
+                        subjectCodeSelect.appendChild(option);
+                    });
+                } else {
+                    console.error('Error fetching subject codes:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</head>
+<body>
+
+    <div class="navbar">
+        {% if session['type'] == 'staff' %}
+        <form id="home" action="{{ url_for('staff') }}" method="GET" style="display: inline;">
+            <button type="submit">Home</button>
+        </form>
+        {% elif session['type'] == 'student' %}
+        <form id="home" action="{{ url_for('student') }}" method="GET" style="display: inline;">
+            <button type="submit">Home</button>
+        </form>
+        {% endif %}
+        <form id="attendance-report" action="{{ url_for('attendance_report') }}" method="POST" style="display: inline;">
+            <button type="submit">Attendance Report</button>
+        </form>
+        <form id="logout-form" action="{{ url_for('logout') }}" method="POST" style="display: inline;">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+    
+<div class="content">
+    <div class="form-container" id="details">
+        <h2>User Details</h2>
+        <p><strong>User ID:</strong> {{ user_details[0] }}</p>
+        <p><strong>Name:</strong> {{ user_details[1] }}</p>
+        <p><strong>Category:</strong> {{ user_details[2] }}</p>
+        <p><strong>College:</strong> {{ user_details[3] }}</p>
+        <p><strong>Department:</strong> {{ user_details[4] }}</p>
+        <p><strong>Language:</strong> {{ user_details[5] }}</p>
+        <p><strong>Date of Birth:</strong> {{ user_details[6] }}</p>
+        <p><strong>Email:</strong> {{ user_details[7] }}</p>
+        <p><strong>Mobile:</strong> {{ user_details[8] }}</p>
+        <p><strong>Address:</strong> {{ user_details[9] }}</p>
+    </div>
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div>
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% if category == 'danger' %}
+                        <script>
+                            showAlert('{{ message }}');
+                        </script>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Form to enter subject code and generate QR code -->
+    <div>
+        <div style="display: flex;
+        flex-direction: row;"
+        >
+            <div class="form-container">
+                <form action="{{ url_for('generate_qr') }}" method="POST">
+
+                    <label for="college">College Id:</label>
+                    <select id="college" name="college" required onchange="updateSubjectCodes()">
+                        <option value="{{ user_details[3] }}" disabled selected>{{ user_details[3] }}</option>
+                        {% for s in college %}
+                            <option value="{{ s[0] }}">{{ s[0] }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="sem">Semester:</label>
+                    <select id="sem" name="sem" required onchange="updateSubjectCodes()">
+                        <option value="" disabled selected>Select Semester</option>
+                        {% for s in sem %}
+                            <option value="{{ s[0] }}">{{ s[0] }}</option>
+                        {% endfor %}
+                    </select>
+        
+                    <label for="Department">Department:</label>
+                    <select id="Department" name="Department" required onchange="updateSubjectCodes()">
+                        <option value="" disabled selected>select Department</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept[0] }}">{{ dept[0] }}</option>
+                        {% endfor %}
+                    </select>
+        
+                    <label for="subject_code">Subject Code:</label>
+                    <select id="subject_code" name="subject_code" required>
+                        <option value="" disabled selected>Select Subject Code</option>
+                        {% for code in subject_codes %}
+                            <option value="{{ code[0] }}">{{ code[0] }}</option>
+                        {% endfor %}
+                    </select>
+        
+                    <div class="scan-button-container">
+                        <button type="submit">Generate QR Code</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+    
+        <div>
+            <!-- Display QR Code -->
+            {% if qr_image_base64 %}
+                <div class="form-container">
+                    <h2>QR Code</h2>
+                    <img src="data:image/png;base64,{{ qr_image_base64 }}" alt="QR Code">
+                </div>
+    
+                <!-- Close Attendance Button -->
+                <form id="close-attendance-form" action="{{ url_for('close_class') }}" method="POST">
+                    <div class="scan-button-container">
+                        <button type="submit">Close Attendance</button>
+                    </div>
+                </form>
+            {% endif %} 
+        </div>
+    </div>
+</body>
+</html>
