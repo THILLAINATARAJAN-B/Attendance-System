@@ -1,0 +1,8 @@
+Project: Attendance System for Office and College
+
+Team Members:
+
+Thillainatarajan B: Backend Python (Flask) Developer, Cloud Integration
+Sivaprakash S: Database Design and Management
+Adithiyan C: UI Developer
+Rajavarman: Test and Validations
