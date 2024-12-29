@@ -97,7 +97,7 @@ Attendance-System/
 
 ## 📸 Screenshots
 
-![Attendance System Screenshot](images/screenshot%20(1).png)
+![Attendance System Screenshot](images/Screenshot (1).png)
 
 ## 🤝 Contributing
 
