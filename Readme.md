@@ -97,7 +97,12 @@ Attendance-System/
 
 ## 📸 Screenshots
 
-![Attendance System Screenshot](images/Screenshot_10.png)
+![Attendance System Screenshot - Staff generating QR code for students to scan and register their attendance](images/Screenshot_7.png)
+
+![Attendance System Screenshot - Student registering his attendance via QR code](images/Screenshot_10.png)
+
+
+
 
 
 ## 🤝 Contributing
