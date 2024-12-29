@@ -54,7 +54,6 @@ The Attendance System is an automated, QR code-based attendance tracking system 
 
 - Python 3.x
 - PostgreSQL Database
-- Virtual environment (recommended)
 
 ### Installation
 
@@ -64,18 +63,13 @@ The Attendance System is an automated, QR code-based attendance tracking system 
    cd Attendance-System
    ```
 
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
 
-3. Install the required dependencies:
+2. Install the required dependencies:
    ```bash
    pip install -r requirements.txt
    ```
 
-4. Configure PostgreSQL:
+3. Configure PostgreSQL:
    - Create a database named `Attendance`
    - Update the database credentials in the code:
      ```python
@@ -85,7 +79,7 @@ The Attendance System is an automated, QR code-based attendance tracking system 
      dbpass = 'your_password'
      ```
 
-5. Run the application:
+4. Run the application:
    ```bash
    python app.py
    ```
@@ -97,10 +91,6 @@ Attendance-System/
 ├── app/
 │   ├── static/          # Static files (CSS, JS, images)
 │   ├── templates/       # HTML templates
-│   ├── models/          # Database models
-│   ├── routes/          # Route handlers
-│   └── __init__.py      # App initialization
-├── venv/                # Virtual environment
 ├── requirements.txt     # Required Python packages
 └── app.py               # Main application file
 ```
@@ -126,7 +116,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👥 Team Members
 
-- **Thillainatarajan B**: Backend Python (Flask) Developer, Cloud Integration
+- **Thillainatarajan B**: Backend Python (Flask) Developer, Project Lead.
 - **Sivaprakash S**: Database Design and Management
 - **Adithiyan C**: UI Developer
 - **Rajavarman**: Test and Validations
