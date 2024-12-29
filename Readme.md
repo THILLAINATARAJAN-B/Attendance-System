@@ -1,6 +1,3 @@
-Here is the content for your `README.md` file:
-
-```markdown
 # Attendance System 🚀
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
